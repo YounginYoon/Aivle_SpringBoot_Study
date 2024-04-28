@@ -1,8 +1,11 @@
 package com.example.test.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,4 +24,9 @@ public class Board extends Time {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid")
+    @JsonBackReference
+    private Member member;
 }

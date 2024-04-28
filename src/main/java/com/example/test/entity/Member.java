@@ -1,8 +1,11 @@
 package com.example.test.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Table(name = "Member")
 @Entity
@@ -21,5 +24,4 @@ public class Member {
     private String username;
 
     private String password;
-
 }

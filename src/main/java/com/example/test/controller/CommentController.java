@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value="/comment")
 @RequiredArgsConstructor
@@ -26,5 +28,20 @@ public class CommentController {
             return ResponseEntity.badRequest().body(createComment);
         }
     }
-    
+
+    @PutMapping("/update/{boardId}/{commentId}")
+    public ResponseEntity<Comment> updateComment(@PathVariable Long boardId, @PathVariable Long commentId, @RequestBody Comment comment) {
+        Comment updatedComment = commentService.updateComment(boardId, commentId, comment);
+        if (updatedComment != null) {
+            return ResponseEntity.ok(updatedComment);
+        }
+        else return ResponseEntity.badRequest().body(updatedComment);
+    }
+
+    @DeleteMapping("/delete/{boardId}/{commentId}")
+    public ResponseEntity<Comment> deleteComment(@PathVariable Long boardId, @PathVariable Long commentId) {
+        Comment deletedComment = commentService.deleteComment(boardId, commentId);
+        if (deletedComment != null) return ResponseEntity.ok(deletedComment);
+        else return ResponseEntity.badRequest().body(deletedComment);
+    }
 }

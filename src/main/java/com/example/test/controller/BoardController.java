@@ -3,7 +3,11 @@ package com.example.test.controller;
 import com.example.test.entity.Board;
 import com.example.test.service.BoardService;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +20,22 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping(value = "/board", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BoardController {
+    private static final Logger log = LoggerFactory.getLogger(BoardController.class);
     private final BoardService boardService;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/post") // localhost:8080/board/post
-    public Board create(@RequestBody Board board) {
-        boardService.create(board);
-        return null;
+    @PostMapping("/post/{uid}") // localhost:8080/board/post
+    public ResponseEntity<Board> createBoard(@PathVariable Long uid, @RequestBody Board board) {
+        Board created = boardService.createBoard(uid, board);
+        if (created != null) {
+            log.info("save success! id: " + created.getId() + " , title: " + created.getTitle() + " , content: " + created.getContent());
+            return ResponseEntity.ok(created);
+        }
+        else {
+            log.info("create fail");
+            return ResponseEntity.badRequest().body(created);
+        }
+
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -30,6 +43,16 @@ public class BoardController {
     public List<Board> getAllBoards() {
         List<Board> boardList = boardService.getAllBoards();
         return boardList;
+    }
+
+    @GetMapping("/{uid}")
+    public ResponseEntity<List<Board>> getMyBoards(@PathVariable Long uid) {
+        List<Board> myBoards = boardService.getMyBoards(uid);
+
+        if (myBoards != null) {
+            return ResponseEntity.ok(myBoards);
+        }
+        else return ResponseEntity.badRequest().body(myBoards);
     }
 
     @PutMapping("/update/{boardId}")

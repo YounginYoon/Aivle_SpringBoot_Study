@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     boolean existsById(Long id);
     List<Board> findCustomByTitleContaining(String keyword);
+    List<Board> findByMemberId(Long uid);
 }
