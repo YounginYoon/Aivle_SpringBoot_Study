@@ -24,9 +24,4 @@ public class Board extends Time {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uid")
-    @JsonBackReference
-    private Member member;
 }

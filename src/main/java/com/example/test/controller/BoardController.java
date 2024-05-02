@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/post/{uid}") // localhost:8080/board/post
+    @PostMapping("/post/uid={uid}") // localhost:8080/board/post
     public ResponseEntity<Board> createBoard(@PathVariable Long uid, @RequestBody Board board) {
         Board created = boardService.createBoard(uid, board);
         if (created != null) {
@@ -45,7 +46,7 @@ public class BoardController {
         return boardList;
     }
 
-    @GetMapping("/{uid}")
+    @GetMapping("/uid={uid}")
     public ResponseEntity<List<Board>> getMyBoards(@PathVariable Long uid) {
         List<Board> myBoards = boardService.getMyBoards(uid);
 
@@ -55,7 +56,7 @@ public class BoardController {
         else return ResponseEntity.badRequest().body(myBoards);
     }
 
-    @PutMapping("/update/{boardId}")
+    @PutMapping("/update/boarId={boardId}")
     public ResponseEntity<Board> updateBoard(@PathVariable Long boardId, @RequestBody Board board) {
         Board updateBoard = boardService.updateBoard(boardId, board);
         if(updateBoard != null) {
@@ -66,7 +67,7 @@ public class BoardController {
         }
     }
 
-    @DeleteMapping("/delete/{boardId}")
+    @DeleteMapping("/delete/boarId={boardId}")
     public ResponseEntity<Board> deleteBoard(@PathVariable Long boardId) {
         Board deleteBoard = boardService.deleteBoard(boardId);
         if (deleteBoard != null) {
@@ -77,9 +78,20 @@ public class BoardController {
         }
     }
 
-    @GetMapping("/search/{keyword}")
+    @GetMapping("/search/keyword={keyword}")
     public List<Board> searchBoard(@PathVariable String keyword) {
         List<Board> searchPosts = boardService.searchBoard(keyword);
         return searchPosts;
+    }
+
+    @GetMapping("/paging")
+    public ResponseEntity<List<Board>> pagingBoards(@RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "3") int size) {
+        Page<Board> pageResult = boardService.pagingBoards(page, size);
+        List<Board> pagingBoards = pageResult.getContent();
+        if (pagingBoards.isEmpty() == true) {
+            return ResponseEntity.badRequest().body(pagingBoards);
+        }
+        else return ResponseEntity.ok(pagingBoards);
     }
 }

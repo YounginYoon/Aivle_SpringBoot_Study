@@ -20,7 +20,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/test/register")
+    @PostMapping("/signup")
     public Member register(@RequestBody MemberDto memberDto) {
         memberService.register(memberDto);
         return null;

@@ -7,6 +7,9 @@ import com.example.test.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +27,7 @@ public class BoardService {
     public Board createBoard(Long uid, Board board) {
         Member member = memberRepository.findById(uid).orElse(null);
         if (member != null) {
-            board.setWriter("Aivle");
-            board.setMember(member);
+            board.setWriter(member.getNickname());
             Board createdBoard = boardRepository.save(board);
 
             return createdBoard;
@@ -39,16 +41,20 @@ public class BoardService {
     }
 
     public List<Board> getMyBoards(Long uid) {
-        List<Board> myBoards = boardRepository.findByMemberId(uid);
-        if (myBoards.isEmpty()) return null;
-        return myBoards;
+        Member member = memberRepository.findById(uid).orElse(null);
+        if (member != null) {
+            List<Board> myBoards = boardRepository.findByWriter(member.getNickname());
+            if (myBoards.isEmpty()) return null;
+            return myBoards;
+        }
+        else return null;
     }
 
     public Board updateBoard(Long boardId, Board boardDetail) {
         Board updateBoard = boardRepository.findById(boardId).orElse(null);
 
         if (updateBoard != null) {
-            if (updateBoard.getWriter().equals("Aivle")) {
+            if (updateBoard.getWriter().equals(boardDetail.getWriter())) {
                 if (boardDetail.getTitle() != null)
                     updateBoard.setTitle(boardDetail.getTitle());
                 if (boardDetail.getContent() != null)
@@ -76,5 +82,10 @@ public class BoardService {
     public List<Board> searchBoard(String keyword) {
         List<Board> posts = boardRepository.findCustomByTitleContaining(keyword);
         return posts;
+    }
+
+    public Page<Board> pagingBoards(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        return boardRepository.findAll(pageRequest);
     }
 }

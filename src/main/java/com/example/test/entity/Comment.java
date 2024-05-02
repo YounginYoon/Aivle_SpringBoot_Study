@@ -28,4 +28,5 @@ public class Comment extends Time{
     @JoinColumn(name="board_id")
     @JsonBackReference
     private Board board;
+
 }

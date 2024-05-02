@@ -26,6 +26,7 @@ public class MemberService {
         member.setEmail(memberDto.getMemberEmail());
         member.setPassword(memberDto.getMemberPassword());
         member.setUsername(memberDto.getMemberUsername());
+        member.setNickname(memberDto.getMemberNickname());
         if(!memberRepository.existsByEmail(member.getEmail()))
             memberRepository.save(member);
         else {
