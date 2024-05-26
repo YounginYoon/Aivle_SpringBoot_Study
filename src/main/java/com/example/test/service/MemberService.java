@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,15 @@ import java.util.Optional;
 public class MemberService {
     private static final Logger log = LoggerFactory.getLogger(MemberService.class);
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void register(MemberDto memberDto) {
         Member member = new Member();
         member.setEmail(memberDto.getMemberEmail());
-        member.setPassword(memberDto.getMemberPassword());
+//        member.setPassword(memberDto.getMemberPassword());
         member.setUsername(memberDto.getMemberUsername());
         member.setNickname(memberDto.getMemberNickname());
+        member.setRole("ROLE_ADMIN");
         if(!memberRepository.existsByEmail(member.getEmail()))
             memberRepository.save(member);
         else {
@@ -44,9 +47,9 @@ public class MemberService {
         String ret = "Fail";
         boolean emailCheck = memberRepository.existsByEmail(loginDto.getLoginEmail());
         if(emailCheck == true) {
-            Optional<Member> getMember = memberRepository.findByEmail(loginDto.getLoginEmail());
-            if (getMember.isEmpty()) return null;
-            Member findMember = getMember.get();
+            Member getMember = memberRepository.findByEmail(loginDto.getLoginEmail());
+            if (getMember == null) return null;
+            Member findMember = getMember;
             if(findMember.getPassword().equals(loginDto.getLoginPassword()) == true) {
                 ret = findMember.getUsername();
             }

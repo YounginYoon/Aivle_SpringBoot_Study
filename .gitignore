@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+/src/main/java/com/example/test/security/jwt/JwtProperties.java
+
+/src/main/resources/application.properties
+/src/main/resources/application.yml

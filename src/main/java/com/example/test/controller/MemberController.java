@@ -3,6 +3,7 @@ package com.example.test.controller;
 import com.example.test.dto.LoginDto;
 import com.example.test.dto.MemberDto;
 import com.example.test.entity.Member;
+import com.example.test.security.auth.CustomUserDetails;
 import com.example.test.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -41,5 +43,22 @@ public class MemberController {
         boolean check = memberService.getEmailCheck(email);
         return check;
     }
+
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/check")
+    public String checkEmail(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Member member = customUserDetails.getMember();
+
+        return member.getUsername();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/admin")
+    public String admin(){
+
+        return "admin";
+    }
+
 
 }
